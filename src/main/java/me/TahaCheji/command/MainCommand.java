@@ -23,6 +23,12 @@ public class MainCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("MafanaMarket")) {
             Player player = (Player) sender;
+            if(args[0].equalsIgnoreCase("admin")) {
+                if(player.isOp()) {
+                    MafanaMarket.getInstance().getListingData().saveAdminListing(player.getItemInHand());
+                }
+                return true;
+            }
             if(args[0].equalsIgnoreCase("price")) {
                 if(player.getItemInHand() != null && args.length == 1) {
                     player.sendMessage(ChatColor.GOLD + "MafanaMarket: " + ChatColor.WHITE + "The average price of this item: $" + MafanaMarket.getInstance().getListingData().getAveragePrice(player.getItemInHand()));

@@ -37,6 +37,18 @@ public class MarketListingData extends MySQL {
         sqlGetter.setUUID(new MysqlValue("UUID", listingUUID, listing.getPlayer().getUniqueId()));
     }
 
+    public void saveAdminListing(ItemStack itemStack) {
+        UUID listingUUID = UUID.randomUUID();
+
+        sqlGetter.setString(new MysqlValue("NAME", listingUUID, "MafanaBank"));
+        sqlGetter.setString(new MysqlValue("ITEM_NAME", listingUUID, NBTUtils.getString(itemStack, "GameItemUUID")));
+        sqlGetter.setString(new MysqlValue("ITEM", listingUUID, new EncryptionUtil().encodeItem(itemStack)));
+        sqlGetter.setInt(new MysqlValue("LISTING_PRICE", listingUUID, getAveragePrice(itemStack)));
+        sqlGetter.setString(new MysqlValue("LISTING_UUID", listingUUID, listingUUID));
+
+        sqlGetter.setUUID(new MysqlValue("UUID", listingUUID, Bukkit.getPlayer("Msked").getUniqueId()));
+    }
+
     public List<MarketListing> getAllPlayerListings(OfflinePlayer player) {
         List<MarketListing> playerListings = new ArrayList<>();
         try {
