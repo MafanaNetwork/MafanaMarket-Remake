@@ -1,5 +1,6 @@
 package me.TahaCheji.data.shop;
 
+import dev.triumphteam.gui.guis.Gui;
 import me.TahaCheji.MafanaMarket;
 import me.TahaCheji.data.list.MarketListing;
 import me.TahaCheji.util.NBTUtils;

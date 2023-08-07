@@ -33,6 +33,19 @@ public class MarketShopMenu implements InventoryHolder {
         return item;
     }
 
+    public ItemStack getListItem() {
+        ItemStack item = new ItemStack(Material.OAK_SIGN);
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        meta.setDisplayName(ChatColor.RED + "List Item");
+        lore.add("--------------------------");
+        lore.add(ChatColor.GOLD + "Click to list a item on the market");
+        lore.add("--------------------------");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public ItemStack getClickItem(ItemType type) {
         ItemStack item = null;
         if(type == ItemType.ITEM) {
@@ -129,7 +142,10 @@ public class MarketShopMenu implements InventoryHolder {
         gui.setItem(21, getClickItem(ItemType.ITEM));
         gui.setItem(28, getClickItem(null));
         gui.setItem(25, getShopInfo(player));
+        gui.setItem(26, getListItem());
         gui.setItem(49, getCloseShop());
+
+
 
 
         for (int emptySlot = 0; emptySlot < gui.getSize(); emptySlot++) {

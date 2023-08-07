@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalInt;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MarketTransactionData extends MySQL {
@@ -130,6 +127,47 @@ public class MarketTransactionData extends MySQL {
 
         return totalPrices / soldPrices.size(); // Calculate the average price
     }
+
+    public int getAverageHighestSoldPrice(ItemStack itemStack) {
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
+
+        List<Integer> soldPrices = getAllTransactions().stream()
+                .filter(transaction -> NBTUtils.getString(transaction.getItem(), "GameItemUUID").equalsIgnoreCase(name))
+                .map(MarketTransaction::getPrice)
+                .sorted(Comparator.reverseOrder()) // Sort the prices in descending order
+                .collect(Collectors.toList());
+
+        if (soldPrices.isEmpty()) {
+            return 0; // No transactions found for the given item name
+        }
+
+        int totalPrices = soldPrices.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        return totalPrices / soldPrices.size(); // Calculate the average price
+    }
+
+    public int getAverageLowestSoldPrice(ItemStack itemStack) {
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
+
+        List<Integer> soldPrices = getAllTransactions().stream()
+                .filter(transaction -> NBTUtils.getString(transaction.getItem(), "GameItemUUID").equalsIgnoreCase(name))
+                .map(MarketTransaction::getPrice)
+                .sorted() // Sort the prices in ascending order
+                .collect(Collectors.toList());
+
+        if (soldPrices.isEmpty()) {
+            return 0; // No transactions found for the given item name
+        }
+
+        int totalPrices = soldPrices.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        return totalPrices / soldPrices.size(); // Calculate the average price
+    }
+
 
     // Get the highest price of sold items
     public int getHighestSoldPrice(ItemStack itemStack) {

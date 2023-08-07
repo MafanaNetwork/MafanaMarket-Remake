@@ -108,6 +108,17 @@ public class MarketListingData extends MySQL {
         return allListings;
     }
 
+    public int getAmountOfListedItems(ItemStack itemStack) {
+        List<MarketListing> allListings = getAllListings();
+
+        int itemCount = (int) allListings.stream()
+                .filter(listing -> listing.getItem().isSimilar(itemStack))
+                .count();
+
+        return itemCount;
+    }
+
+
     public int getAveragePrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
@@ -125,6 +136,45 @@ public class MarketListingData extends MySQL {
 
         return totalPrices / filteredListings.size(); // Calculate the average price
     }
+
+    public int getAverageHighestPrice(ItemStack itemStack) {
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
+
+        List<MarketListing> filteredListings = getAllListings().stream()
+                .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+
+        if (filteredListings.isEmpty()) {
+            return 0; // No listings found for the given item name
+        }
+
+        int highestPrice = filteredListings.stream()
+                .mapToInt(MarketListing::getPrice)
+                .max()
+                .orElse(0); // Get the highest price
+
+        return highestPrice;
+    }
+
+    public int getAverageLowestPrice(ItemStack itemStack) {
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
+
+        List<MarketListing> filteredListings = getAllListings().stream()
+                .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+
+        if (filteredListings.isEmpty()) {
+            return 0; // No listings found for the given item name
+        }
+
+        int lowestPrice = filteredListings.stream()
+                .mapToInt(MarketListing::getPrice)
+                .min()
+                .orElse(0); // Get the lowest price
+
+        return lowestPrice;
+    }
+
 
     public int getHighestPrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");

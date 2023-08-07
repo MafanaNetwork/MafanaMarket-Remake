@@ -65,6 +65,10 @@ public class MarketShopMenu_GUI_ClickEvent implements Listener {
                 player.sendMessage(ChatColor.GOLD + "MafanaMarket: " +  ChatColor.RED + "Error contact a admin if this is not correct");
             }
         }
+        if(e.getSlot() == 26) {
+            player.closeInventory();
+            new MarketListItemMenu().getMarketListItemGUI(player).open(player);
+        }
 
     }
 

@@ -13,15 +13,18 @@ import java.lang.reflect.InvocationTargetException;
 public final class MafanaMarket extends JavaPlugin {
 
     private static MafanaMarket instance;
-    private MarketListingData listingData = new MarketListingData();
-    private MarketTransactionData transactionData = new MarketTransactionData();
+    private final MarketListingData listingData = new MarketListingData();
+    private final MarketTransactionData transactionData = new MarketTransactionData();
 
     @Override
     public void onEnable() {
         System.out.println(ChatColor.GOLD + "Starting: MafanaMarket");
         instance = this;
+
+        // Connect to the database for both MarketListingData and MarketTransactionData
         listingData.connect();
         transactionData.connect();
+
         String packageName = getClass().getPackage().getName();
         for (Class<?> clazz : new Reflections(packageName, ".listeners").getSubTypesOf(Listener.class)) {
             try {
@@ -33,8 +36,8 @@ public final class MafanaMarket extends JavaPlugin {
         }
 
         getCommand("MafanaMarket").setExecutor(new MainCommand());
-
     }
+
 
     @Override
     public void onDisable() {
