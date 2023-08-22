@@ -1,0 +1,10 @@
+depend: [MafanaMysqlAPI]
+name: MafanaMarketRentables
+version: 1.0-SNAPSHOT
+main: me.TahaCheji.MafanaMarketRentables
+api-version: 1.16
+authors: [ TahaCheji ]
+description: A place where players can open up shops and list things
+
+commands:
+  mmr:
