@@ -11,14 +11,16 @@ public class MarketTransaction {
     private String itemName;
     private ItemStack item;
     private int price;
+    private int days;
     private String listingUUID;
     private LocalDate listingTime;
 
-    public MarketTransaction(OfflinePlayer buyer, OfflinePlayer seller, String itemName, ItemStack item, int price, String listingUUID, LocalDate listingTime) {
+    public MarketTransaction(OfflinePlayer buyer, OfflinePlayer seller, String itemName, ItemStack item, int price, int days, String listingUUID, LocalDate listingTime) {
         this.buyer = buyer;
         this.seller = seller;
         this.itemName = itemName;
         this.item = item;
+        this.days = days;
         this.price = price;
         this.listingUUID = listingUUID;
         this.listingTime = listingTime;
@@ -42,6 +44,10 @@ public class MarketTransaction {
 
     public int getPrice() {
         return price;
+    }
+
+    public int getDays() {
+        return days;
     }
 
     public String getListingUUID() {

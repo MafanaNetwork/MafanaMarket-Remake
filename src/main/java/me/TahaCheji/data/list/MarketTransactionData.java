@@ -22,14 +22,15 @@ public class MarketTransactionData extends MySQL {
         super("localhost", "3306", "mafanation", "root", "");
     }
 
-    public void addListingTransaction(OfflinePlayer player, MarketListing listing) {
+    public void addListingTransaction(OfflinePlayer player, MarketRenting listing) {
         UUID listingUUID = UUID.randomUUID();
         sqlGetter.setString(new MysqlValue("BUYER", listingUUID, player.getName()));
         sqlGetter.setString(new MysqlValue("SELLER_NAME", listingUUID, listing.getOfflinePlayer().getName()));
         sqlGetter.setString(new MysqlValue("SELLER_UUID", listingUUID, listing.getOfflinePlayer().getUniqueId()));
         sqlGetter.setString(new MysqlValue("SOLD_ITEM_NAME", listingUUID, NBTUtils.getString(listing.getItem(), "GameItemUUID")));
         sqlGetter.setString(new MysqlValue("SOLD_ITEM", listingUUID, new EncryptionUtil().encodeItem(listing.getItem())));
-        sqlGetter.setInt(new MysqlValue("SOLD_LISTING_PRICE", listingUUID, listing.getPrice()));
+        sqlGetter.setInt(new MysqlValue("SOLD_RENTED_PRICE", listingUUID, listing.getPrice()));
+        sqlGetter.setInt(new MysqlValue("SOLD_RENTED_DAYS", listingUUID, listing.getDays()));
         sqlGetter.setString(new MysqlValue("SOLD_LISTING_UUID", listingUUID, listing.getUuid()));
         LocalDate currentDate = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -47,7 +48,8 @@ public class MarketTransactionData extends MySQL {
             List<String> buyers = sqlGetter.getAllString(playerUUID, new MysqlValue("BUYER"));
             List<String> sellers = sqlGetter.getAllString(playerUUID, new MysqlValue("SELLER_NAME"));
             List<String> itemNames = sqlGetter.getAllString(playerUUID, new MysqlValue("SOLD_ITEM_NAME"));
-            List<Integer> prices = sqlGetter.getAllIntager(playerUUID, new MysqlValue("SOLD_LISTING_PRICE"));
+            List<Integer> prices = sqlGetter.getAllIntager(playerUUID, new MysqlValue("SOLD_RENTED_PRICE"));
+            List<Integer> days = sqlGetter.getAllIntager(playerUUID, new MysqlValue("SOLD_RENTED_DAYS"));
             List<String> dates = sqlGetter.getAllString(playerUUID, new MysqlValue("SOLD_LISTING_TIME"));
 
             for (int i = 0; i < buyers.size(); i++) {
@@ -55,9 +57,10 @@ public class MarketTransactionData extends MySQL {
                 String sellerName = sellers.get(i);
                 String itemName = itemNames.get(i);
                 int price = prices.get(i);
+                int day = days.get(i);
                 String date = dates.get(i);
 
-                String transactionString = String.format("Buyer: %s | Seller: %s | Item: %s | Price: %d | Date: %s", buyerName, sellerName, itemName, price, date);
+                String transactionString = String.format("Buyer: %s | Seller: %s | Item: %s | Price: %d | | Days: %d | Date: %s", buyerName, sellerName, itemName, price, day, date);
                 transactions.add(transactionString);
             }
 
@@ -72,11 +75,11 @@ public class MarketTransactionData extends MySQL {
         List<MarketTransaction> transactions = new ArrayList<>();
         try {
             List<String> buyers = sqlGetter.getAllString(new MysqlValue("BUYER"));
-            List<String> sellerNames = sqlGetter.getAllString(new MysqlValue("SELLER_NAME"));
             List<String> sellerUUIDs = sqlGetter.getAllString(new MysqlValue("SELLER_UUID"));
             List<String> itemNames = sqlGetter.getAllString(new MysqlValue("SOLD_ITEM_NAME"));
             List<String> itemData = sqlGetter.getAllString(new MysqlValue("SOLD_ITEM"));
-            List<Integer> prices = sqlGetter.getAllIntager(new MysqlValue("SOLD_LISTING_PRICE"));
+            List<Integer> prices = sqlGetter.getAllIntager(new MysqlValue("SOLD_RENTED_PRICE"));
+            List<Integer> days = sqlGetter.getAllIntager(new MysqlValue("SOLD_RENTED_DAYS"));
             List<String> listingUUIDs = sqlGetter.getAllString(new MysqlValue("SOLD_LISTING_UUID"));
             List<String> listingTimes = sqlGetter.getAllString(new MysqlValue("SOLD_LISTING_TIME"));
 
@@ -87,10 +90,11 @@ public class MarketTransactionData extends MySQL {
                 String itemName = itemNames.get(i);
                 ItemStack item = new EncryptionUtil().itemFromBase64(itemData.get(i));
                 int price = prices.get(i);
+                int day = days.get(i);
                 String uuidString = listingUUIDs.get(i);
                 LocalDate time = LocalDate.parse(listingTimes.get(i), formatter);
 
-                MarketTransaction transaction = new MarketTransaction(buyer, seller, itemName, item, price, uuidString, time);
+                MarketTransaction transaction = new MarketTransaction(buyer, seller, itemName, item, price,day, uuidString, time);
                 transactions.add(transaction);
             }
         } catch (Exception e) {
@@ -227,12 +231,14 @@ public class MarketTransactionData extends MySQL {
     @Override
     public void connect() {
         super.connect();
-        if (this.isConnected()) sqlGetter.createTable("market_transactions",
+        if (this.isConnected()) sqlGetter.createTable("market_rentables_transactions",
                 new MysqlValue("BUYER", ""),
                 new MysqlValue("SELLER_NAME", ""),
+                new MysqlValue("SELLER_UUID", ""),
                 new MysqlValue("SOLD_ITEM_NAME", ""),
                 new MysqlValue("SOLD_ITEM", ""),
-                new MysqlValue("SOLD_LISTING_PRICE", 0),
+                new MysqlValue("SOLD_RENTED_PRICE", 0),
+                new MysqlValue("SOLD_RENTED_DAYS", 0),
                 new MysqlValue("SOLD_LISTING_UUID", ""),
                 new MysqlValue("SOLD_LISTING_TIME", ""));
     }

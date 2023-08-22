@@ -1,10 +1,7 @@
 package me.TahaCheji.data.menu;
 
-import me.TahaCheji.MafanaMarket;
 import me.TahaCheji.data.market.ItemType;
 import me.TahaCheji.data.market.MarketShop_GUI;
-import me.TahaCheji.data.shop.GamePlayerMarketShop_GUI;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,7 +11,7 @@ public class MarketShopMenu_GUI_ClickEvent implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
-        if (!e.getView().getTitle().contains("MarketMenu")) {
+        if (!e.getView().getTitle().contains("MarketMenu") && !e.getView().getTitle().contains("Rentables")) {
             return;
         }
         if (e.getCurrentItem() == null) {
@@ -44,32 +41,17 @@ public class MarketShopMenu_GUI_ClickEvent implements Listener {
             //Material
             new MarketShop_GUI().getMarketShopGui(ItemType.MATERIAL).open(player);
         }
-        if(e.getSlot() == 21) {
-            //items
-            new MarketShop_GUI().getMarketShopGui(ItemType.ITEM).open(player);
-        }
         if(e.getSlot() == 28) {
             //all
-            new MarketShop_GUI().getMarketShopGui().open(player);
-        }
-        if(e.getSlot() == 39) {
             new MarketShop_GUI().getMarketShopGui().open(player);
         }
         if(e.getSlot() == 49) {
             player.closeInventory();
         }
-        if(e.getSlot() == 25) {
-            if(MafanaMarket.getInstance().getListingData().getAllPlayerListings(player) != null) {
-                player.openInventory(new GamePlayerMarketShop_GUI(MafanaMarket.getInstance().getListingData().getPlayerShop(player), player).getInventory());
-            } else {
-                player.sendMessage(ChatColor.GOLD + "MafanaMarket: " +  ChatColor.RED + "Error contact a admin if this is not correct");
-            }
-        }
-        if(e.getSlot() == 26) {
+        if(e.getSlot() == 34) {
             player.closeInventory();
             new MarketListItemMenu().getMarketListItemGUI(player).open(player);
         }
-
     }
 
 }

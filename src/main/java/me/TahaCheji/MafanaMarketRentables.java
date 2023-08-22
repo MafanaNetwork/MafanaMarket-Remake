@@ -1,7 +1,8 @@
 package me.TahaCheji;
 
-import me.TahaCheji.command.MainCommand;
-import me.TahaCheji.data.list.MarketListingData;
+import me.TahaCheji.command.AdminCommand;
+import me.TahaCheji.data.list.MarketRentedItemData;
+import me.TahaCheji.data.list.MarketRentingData;
 import me.TahaCheji.data.list.MarketTransactionData;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
@@ -10,20 +11,22 @@ import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
 
-public final class MafanaMarket extends JavaPlugin {
+public final class MafanaMarketRentables extends JavaPlugin {
 
-    private static MafanaMarket instance;
-    private final MarketListingData listingData = new MarketListingData();
+    private static MafanaMarketRentables instance;
+    private final MarketRentingData listingData = new MarketRentingData();
+    private final MarketRentedItemData rentedItemData = new MarketRentedItemData();
     private final MarketTransactionData transactionData = new MarketTransactionData();
 
     @Override
     public void onEnable() {
-        System.out.println(ChatColor.GOLD + "Starting: MafanaMarket");
+        System.out.println(ChatColor.GOLD + "Starting: MafanaMarketRentables");
         instance = this;
 
         // Connect to the database for both MarketListingData and MarketTransactionData
         listingData.connect();
         transactionData.connect();
+        rentedItemData.connect();
 
         String packageName = getClass().getPackage().getName();
         for (Class<?> clazz : new Reflections(packageName, ".listeners").getSubTypesOf(Listener.class)) {
@@ -34,8 +37,7 @@ public final class MafanaMarket extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-
-        getCommand("MafanaMarket").setExecutor(new MainCommand());
+        getCommand("mmr").setExecutor(new AdminCommand());
     }
 
 
@@ -43,14 +45,19 @@ public final class MafanaMarket extends JavaPlugin {
     public void onDisable() {
         listingData.disconnect();
         transactionData.disconnect();
-        System.out.println(ChatColor.RED + "Turning off: MafanaMarket");
+        rentedItemData.disconnect();
+        System.out.println(ChatColor.RED + "Turning off: MafanaMarketRentables");
     }
 
-    public MarketListingData getListingData() {
+    public MarketRentedItemData getRentedItemData() {
+        return rentedItemData;
+    }
+
+    public MarketRentingData getListingData() {
         return listingData;
     }
 
-    public static MafanaMarket getInstance() {
+    public static MafanaMarketRentables getInstance() {
         return instance;
     }
 

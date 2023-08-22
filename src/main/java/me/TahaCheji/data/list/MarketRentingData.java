@@ -1,6 +1,4 @@
 package me.TahaCheji.data.list;
-
-import me.TahaCheji.data.shop.GamePlayerMarketShop;
 import me.TahaCheji.mysqlData.MySQL;
 import me.TahaCheji.mysqlData.MysqlValue;
 import me.TahaCheji.mysqlData.SQLGetter;
@@ -17,56 +15,60 @@ import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class MarketListingData extends MySQL {
+public class MarketRentingData extends MySQL {
 
     SQLGetter sqlGetter = new SQLGetter(this);
 
-    public MarketListingData() {
+    public MarketRentingData() {
         super("localhost", "3306", "mafanation", "root", "");
     }
 
-    public void saveListing(MarketListing listing) {
+    public void saveRentedListing(MarketRenting listing) {
         UUID listingUUID = UUID.randomUUID();
 
         sqlGetter.setString(new MysqlValue("NAME", listingUUID, listing.getPlayer().getName()));
         sqlGetter.setString(new MysqlValue("ITEM_NAME", listingUUID, NBTUtils.getString(listing.getItem(), "GameItemUUID")));
         sqlGetter.setString(new MysqlValue("ITEM", listingUUID, new EncryptionUtil().encodeItem(listing.getItem())));
-        sqlGetter.setInt(new MysqlValue("LISTING_PRICE", listingUUID, listing.getPrice()));
+        sqlGetter.setInt(new MysqlValue("RENTED_PRICE", listingUUID, listing.getPrice()));
+        sqlGetter.setInt(new MysqlValue("RENTED_DAYS", listingUUID, listing.getDays()));
         sqlGetter.setString(new MysqlValue("LISTING_UUID", listingUUID, listing.getUuid().toString()));
 
         sqlGetter.setUUID(new MysqlValue("UUID", listingUUID, listing.getPlayer().getUniqueId()));
     }
 
-    public void saveAdminListing(ItemStack itemStack) {
+    public void saveAdminRentedListing(ItemStack itemStack) {
         UUID listingUUID = UUID.randomUUID();
 
         sqlGetter.setString(new MysqlValue("NAME", listingUUID, "MafanaBank"));
         sqlGetter.setString(new MysqlValue("ITEM_NAME", listingUUID, NBTUtils.getString(itemStack, "GameItemUUID")));
         sqlGetter.setString(new MysqlValue("ITEM", listingUUID, new EncryptionUtil().encodeItem(itemStack)));
-        sqlGetter.setInt(new MysqlValue("LISTING_PRICE", listingUUID, getAveragePrice(itemStack)));
+        sqlGetter.setInt(new MysqlValue("RENTED_PRICE", listingUUID, getAveragePrice(itemStack)));
+        sqlGetter.setInt(new MysqlValue("RENTED_DAYS", listingUUID, 0));
         sqlGetter.setString(new MysqlValue("LISTING_UUID", listingUUID, listingUUID));
 
         sqlGetter.setUUID(new MysqlValue("UUID", listingUUID, Bukkit.getPlayer("Msked").getUniqueId()));
     }
 
-    public List<MarketListing> getAllPlayerListings(OfflinePlayer player) {
-        List<MarketListing> playerListings = new ArrayList<>();
+    public List<MarketRenting> getAllPlayerListings(OfflinePlayer player) {
+        List<MarketRenting> playerListings = new ArrayList<>();
         try {
             UUID playerUUID = player.getUniqueId();
             List<UUID> names = sqlGetter.getAllUUID(playerUUID, new MysqlValue("UUID"));
             List<String> itemsData = sqlGetter.getAllString(playerUUID, new MysqlValue("ITEM"));
-            List<Integer> listingPrices = sqlGetter.getAllIntager(playerUUID, new MysqlValue("LISTING_PRICE"));
+            List<Integer> listingPrices = sqlGetter.getAllIntager(playerUUID, new MysqlValue("RENTED_PRICE"));
             List<String> listingUUIDs = sqlGetter.getAllString(playerUUID, new MysqlValue("LISTING_UUID"));
+            List<Integer> listingDays = sqlGetter.getAllIntager(playerUUID, new MysqlValue("RENTED_DAYS"));
 
             for (int i = 0; i < names.size(); i++) {
                 String itemData = itemsData.get(i);
                 int price = listingPrices.get(i);
+                int days = listingDays.get(i);
                 String uuidString = listingUUIDs.get(i);
 
                 Player listingPlayer = Bukkit.getPlayer(playerUUID); // Assuming the player is online
                 ItemStack item = new EncryptionUtil().itemFromBase64(itemData);
 
-                MarketListing listing = new MarketListing(listingPlayer, item, price, uuidString);
+                MarketRenting listing = new MarketRenting(listingPlayer, item, price, days, uuidString);
                 playerListings.add(listing);
             }
         } catch (Exception e) {
@@ -77,19 +79,21 @@ public class MarketListingData extends MySQL {
     }
 
 
-    public List<MarketListing> getAllListings() {
-        List<MarketListing> allListings = new ArrayList<>();
+    public List<MarketRenting> getAllListings() {
+        List<MarketRenting> allListings = new ArrayList<>();
         try {
             List<UUID> listingUUIDs = sqlGetter.getAllUUID(new MysqlValue("UUID"));
             List<String> playerUUIDs = sqlGetter.getAllString(new MysqlValue("UUID"));
             List<String> itemsData = sqlGetter.getAllString(new MysqlValue("ITEM"));
-            List<Integer> listingPrices = sqlGetter.getAllIntager(new MysqlValue("LISTING_PRICE"));
+            List<Integer> listingPrices = sqlGetter.getAllIntager(new MysqlValue("RENTED_PRICE"));
             List<String> listingUUIDStrings = sqlGetter.getAllString(new MysqlValue("LISTING_UUID"));
+            List<Integer> listingDays = sqlGetter.getAllIntager(new MysqlValue("RENTED_DAYS"));
 
             for (int i = 0; i < listingUUIDs.size(); i++) {
                 UUID playerUUID = UUID.fromString(playerUUIDs.get(i));
                 String itemData = itemsData.get(i);
                 int price = listingPrices.get(i);
+                int days = listingDays.get(i);
                 String uuidString = listingUUIDStrings.get(i);
                 if (playerUUID == null || itemData == null || uuidString == null) {
                     continue;
@@ -98,7 +102,7 @@ public class MarketListingData extends MySQL {
                 Player listingPlayer = Bukkit.getPlayer(playerUUID); // Assuming the player is online
                 ItemStack item = new EncryptionUtil().itemFromBase64(itemData);
 
-                MarketListing listing = new MarketListing(listingPlayer, item, price, uuidString);
+                MarketRenting listing = new MarketRenting(listingPlayer, item, price,days, uuidString);
                 allListings.add(listing);
             }
         } catch (Exception e) {
@@ -109,10 +113,11 @@ public class MarketListingData extends MySQL {
     }
 
     public int getAmountOfListedItems(ItemStack itemStack) {
-        List<MarketListing> allListings = getAllListings();
+        List<MarketRenting> allListings = getAllListings();
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
         int itemCount = (int) allListings.stream()
-                .filter(listing -> listing.getItem().isSimilar(itemStack))
+                .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").toLowerCase().equalsIgnoreCase(name))
                 .count();
 
         return itemCount;
@@ -122,7 +127,7 @@ public class MarketListingData extends MySQL {
     public int getAveragePrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
-        List<MarketListing> filteredListings = getAllListings().stream()
+        List<MarketRenting> filteredListings = getAllListings().stream()
                 .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").toLowerCase().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -131,7 +136,7 @@ public class MarketListingData extends MySQL {
         }
 
         int totalPrices = filteredListings.stream()
-                .mapToInt(MarketListing::getPrice)
+                .mapToInt(MarketRenting::getPrice)
                 .sum();
 
         return totalPrices / filteredListings.size(); // Calculate the average price
@@ -140,7 +145,7 @@ public class MarketListingData extends MySQL {
     public int getAverageHighestPrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
-        List<MarketListing> filteredListings = getAllListings().stream()
+        List<MarketRenting> filteredListings = getAllListings().stream()
                 .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -149,7 +154,7 @@ public class MarketListingData extends MySQL {
         }
 
         int highestPrice = filteredListings.stream()
-                .mapToInt(MarketListing::getPrice)
+                .mapToInt(MarketRenting::getPrice)
                 .max()
                 .orElse(0); // Get the highest price
 
@@ -159,7 +164,7 @@ public class MarketListingData extends MySQL {
     public int getAverageLowestPrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
-        List<MarketListing> filteredListings = getAllListings().stream()
+        List<MarketRenting> filteredListings = getAllListings().stream()
                 .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -168,7 +173,7 @@ public class MarketListingData extends MySQL {
         }
 
         int lowestPrice = filteredListings.stream()
-                .mapToInt(MarketListing::getPrice)
+                .mapToInt(MarketRenting::getPrice)
                 .min()
                 .orElse(0); // Get the lowest price
 
@@ -179,7 +184,7 @@ public class MarketListingData extends MySQL {
     public int getHighestPrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
-        List<MarketListing> filteredListings = getAllListings().stream()
+        List<MarketRenting> filteredListings = getAllListings().stream()
                 .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").toLowerCase().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -188,7 +193,7 @@ public class MarketListingData extends MySQL {
         }
 
         OptionalInt maxPrice = filteredListings.stream()
-                .mapToInt(MarketListing::getPrice)
+                .mapToInt(MarketRenting::getPrice)
                 .max();
 
         if (maxPrice.isPresent()) {
@@ -201,7 +206,7 @@ public class MarketListingData extends MySQL {
     public int getLowestPrice(ItemStack itemStack) {
         String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
-        List<MarketListing> filteredListings = getAllListings().stream()
+        List<MarketRenting> filteredListings = getAllListings().stream()
                 .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").toLowerCase().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
 
@@ -210,7 +215,7 @@ public class MarketListingData extends MySQL {
         }
 
         OptionalInt minPrice = filteredListings.stream()
-                .mapToInt(MarketListing::getPrice)
+                .mapToInt(MarketRenting::getPrice)
                 .min();
 
         if (minPrice.isPresent()) {
@@ -221,12 +226,8 @@ public class MarketListingData extends MySQL {
     }
 
 
-    public void removeListing(MarketListing listing) {
+    public void removeRentedListing(MarketRenting listing) {
         sqlGetter.removeString(listing.getUuid().toString(), new MysqlValue("LISTING_UUID"));
-    }
-
-    public GamePlayerMarketShop getPlayerShop(OfflinePlayer player) {
-        return new GamePlayerMarketShop(player.getPlayer());
     }
 
 
@@ -243,11 +244,12 @@ public class MarketListingData extends MySQL {
     @Override
     public void connect() {
         super.connect();
-        if (this.isConnected()) sqlGetter.createTable("market_listings",
+        if (this.isConnected()) sqlGetter.createTable("market_rentables",
                 new MysqlValue("NAME", ""),
                 new MysqlValue("ITEM_NAME", ""),
                 new MysqlValue("ITEM", ""),
-                new MysqlValue("LISTING_PRICE", 0),
+                new MysqlValue("RENTED_PRICE", 0),
+                new MysqlValue("RENTED_DAYS", 0),
                 new MysqlValue("LISTING_UUID", ""));
     }
 

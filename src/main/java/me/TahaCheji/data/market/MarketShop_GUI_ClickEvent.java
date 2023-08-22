@@ -1,9 +1,9 @@
 package me.TahaCheji.data.market;
 
 import de.tr7zw.nbtapi.NBTItem;
-import me.TahaCheji.MafanaMarket;
+import me.TahaCheji.MafanaMarketRentables;
 import me.TahaCheji.data.buyingListedItems.BuyListedItem_GUI;
-import me.TahaCheji.data.list.MarketListing;
+import me.TahaCheji.data.list.MarketRenting;
 import me.TahaCheji.data.menu.MarketShopMenu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,7 @@ public class MarketShop_GUI_ClickEvent implements Listener {
             e.setCancelled(true);
             return;
         }
-        for (MarketListing listing : MafanaMarket.getInstance().getListingData().getAllListings()) {
+        for (MarketRenting listing : MafanaMarketRentables.getInstance().getListingData().getAllListings()) {
             if (new NBTItem(e.getCurrentItem()).getString("ListUUID").contains(listing.getUuid().toString())) {
                 Player player = (Player) e.getWhoClicked();
                 if(listing.getPlayer().getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString())) {

@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>MafanaMarket</groupId>
-    <artifactId>MafanaMarket</artifactId>
+    <groupId>MafanaMarket-Rentables</groupId>
+    <artifactId>MafanaMarket-Rentables</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>MafanaMarket</name>
+    <name>MafanaMarketRentables</name>
 
     <description>A place where players can open up shops and list things</description>
     <properties>
@@ -40,7 +40,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>C:\Users\tahac\Desktop\Testing_Sever\plugins\MafanaMarket.jar</outputFile>
+                            <outputFile>C:\Users\tahac\Desktop\Testing_Sever\plugins\MafanaMarketRentables.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -117,6 +117,18 @@
             <groupId>com.github.Rapha149</groupId>
             <artifactId>SignGUI</artifactId>
             <version>v2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MaskedWasTaken</groupId>
+            <artifactId>MafanaSeasons</artifactId>
+            <version>1.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MaskedWasTaken</groupId>
+            <artifactId>MafanaInventoryAPI-ReMake</artifactId>
+            <version>2.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

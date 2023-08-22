@@ -1,10 +1,10 @@
 depend: [MafanaMysqlAPI]
-name: MafanaMarket
+name: MafanaMarketRentables
 version: ${project.version}
-main: me.TahaCheji.MafanaMarket
+main: me.TahaCheji.MafanaMarketRentables
 api-version: 1.16
 authors: [ TahaCheji ]
 description: A place where players can open up shops and list things
 
 commands:
-  MafanaMarket:
+  mmr:

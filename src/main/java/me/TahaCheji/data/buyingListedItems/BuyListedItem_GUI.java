@@ -1,6 +1,6 @@
 package me.TahaCheji.data.buyingListedItems;
 
-import me.TahaCheji.data.list.MarketListing;
+import me.TahaCheji.data.list.MarketRenting;
 import me.TahaCheji.util.NBTUtils;
 import me.tahacheji.mafananetwork.MafanaBank;
 import org.bukkit.Bukkit;
@@ -19,13 +19,14 @@ public class BuyListedItem_GUI implements InventoryHolder {
 
     Inventory gui;
 
-    public ItemStack getInfo(MarketListing listing) {
+    public ItemStack getInfo(MarketRenting listing) {
         ItemStack item = new ItemStack(Material.PAPER);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.DARK_PURPLE + "Listing Info");
         lore.add("--------------------------");
         lore.add(ChatColor.GOLD + "Price: $" + listing.getPrice());
+        lore.add(ChatColor.GOLD + "Days: " + listing.getDays());
         lore.add(ChatColor.GOLD + "Seller: " + listing.getPlayer().getDisplayName());
         lore.add(ChatColor.GOLD + "Listing UUID: " + listing.getUuid().toString());
         lore.add("--------------------------");
@@ -47,8 +48,8 @@ public class BuyListedItem_GUI implements InventoryHolder {
         return item;
     }
 
-    public BuyListedItem_GUI(MarketListing listing, Player player) {
-        gui = Bukkit.createInventory(null, 54, ChatColor.GRAY + "" + ChatColor.BOLD + listing.getItem().getItemMeta().getDisplayName() + " Listing");
+    public BuyListedItem_GUI(MarketRenting listing, Player player) {
+        gui = Bukkit.createInventory(null, 54, ChatColor.GRAY + "" + ChatColor.BOLD + listing.getItem().getItemMeta().getDisplayName() + " Listing_R");
         List<String> lore1 = new ArrayList<>();
         ItemStack newItem = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta newmeta = newItem.getItemMeta();
@@ -83,7 +84,7 @@ public class BuyListedItem_GUI implements InventoryHolder {
             List<String> lore = new ArrayList<>();
             meta.setDisplayName(ChatColor.RED + "Declined");
             lore.add("--------------------------");
-            lore.add(ChatColor.GOLD + "You do not have the coins the buy this item.");
+            lore.add(ChatColor.GOLD + "You do not have the coins to rent this item.");
             lore.add("--------------------------");
             meta.setLore(lore);
             item.setItemMeta(meta);
