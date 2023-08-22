@@ -110,9 +110,10 @@ public class MarketListingData extends MySQL {
 
     public int getAmountOfListedItems(ItemStack itemStack) {
         List<MarketListing> allListings = getAllListings();
+        String name = NBTUtils.getString(itemStack, "GameItemUUID");
 
         int itemCount = (int) allListings.stream()
-                .filter(listing -> listing.getItem().isSimilar(itemStack))
+                .filter(listing -> NBTUtils.getString(listing.getItem(), "GameItemUUID").toLowerCase().equalsIgnoreCase(name))
                 .count();
 
         return itemCount;

@@ -1,14 +1,21 @@
 package me.TahaCheji.data.menu;
 
+import de.rapha149.signgui.SignGUI;
+import de.rapha149.signgui.SignGUIAction;
 import me.TahaCheji.MafanaMarket;
 import me.TahaCheji.data.market.ItemType;
 import me.TahaCheji.data.market.MarketShop_GUI;
 import me.TahaCheji.data.shop.GamePlayerMarketShop_GUI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class MarketShopMenu_GUI_ClickEvent implements Listener {
 
@@ -65,11 +72,29 @@ public class MarketShopMenu_GUI_ClickEvent implements Listener {
                 player.sendMessage(ChatColor.GOLD + "MafanaMarket: " +  ChatColor.RED + "Error contact a admin if this is not correct");
             }
         }
-        if(e.getSlot() == 26) {
+        if(e.getSlot() == 34) {
             player.closeInventory();
             new MarketListItemMenu().getMarketListItemGUI(player).open(player);
         }
+        if(e.getSlot() == 16) {
+            openSearchSign(player);
+        }
 
+    }
+
+    public void openSearchSign(Player player) {
+        SignGUI.builder()
+                .setLines(null, "---------------", "Search", "MafanaMarket") // set lines
+                .setType(Material.DARK_OAK_SIGN) // set the sign type
+                .setHandler((p, result) -> { // set the handler/listener (called when the player finishes editing)
+                    String x = result.getLineWithoutColor(0);
+                    Player newPlayer = Bukkit.getPlayer(x);
+                    if (newPlayer == null) {
+                        return List.of(SignGUIAction.run(() -> player.openInventory(new MarketShopMenu(player).getInventory())),
+                                SignGUIAction.run(() -> player.sendMessage(ChatColor.RED + "MafanaMarket: PLAYER_NOT_FOUND")));
+                    }
+                    return List.of(SignGUIAction.run(() -> player.openInventory(new GamePlayerMarketShop_GUI(MafanaMarket.getInstance().getListingData().getPlayerShop(newPlayer), player).getInventory())));
+                }).callHandlerSynchronously(MafanaMarket.getInstance()).build().open(player);
     }
 
 }

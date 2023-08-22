@@ -72,7 +72,6 @@ public class MarketTransactionData extends MySQL {
         List<MarketTransaction> transactions = new ArrayList<>();
         try {
             List<String> buyers = sqlGetter.getAllString(new MysqlValue("BUYER"));
-            List<String> sellerNames = sqlGetter.getAllString(new MysqlValue("SELLER_NAME"));
             List<String> sellerUUIDs = sqlGetter.getAllString(new MysqlValue("SELLER_UUID"));
             List<String> itemNames = sqlGetter.getAllString(new MysqlValue("SOLD_ITEM_NAME"));
             List<String> itemData = sqlGetter.getAllString(new MysqlValue("SOLD_ITEM"));
@@ -230,6 +229,7 @@ public class MarketTransactionData extends MySQL {
         if (this.isConnected()) sqlGetter.createTable("market_transactions",
                 new MysqlValue("BUYER", ""),
                 new MysqlValue("SELLER_NAME", ""),
+                new MysqlValue("SELLER_UUID", ""),
                 new MysqlValue("SOLD_ITEM_NAME", ""),
                 new MysqlValue("SOLD_ITEM", ""),
                 new MysqlValue("SOLD_LISTING_PRICE", 0),

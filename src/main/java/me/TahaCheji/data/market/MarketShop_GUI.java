@@ -40,7 +40,7 @@ public class MarketShop_GUI implements Listener {
         PaginatedGui gui = Gui.paginated()
                 .title(Component.text(ChatColor.GOLD + "MafanaMarket " + ChatColor.DARK_GREEN + itemType.getLore() + ChatColor.GOLD + " Listings"))
                 .rows(6)
-                .pageSize(54)
+                .pageSize(28)
                 .disableAllInteractions()
                 .create();
         List<String> lore = new ArrayList<>();
@@ -85,36 +85,36 @@ public class MarketShop_GUI implements Listener {
         gui.setItem(6, 3, ItemBuilder.from(Material.PAPER).setName(ChatColor.DARK_GRAY + "Previous").asGuiItem(event -> gui.previous()));
         gui.setItem(6, 7, ItemBuilder.from(Material.PAPER).setName(ChatColor.DARK_GRAY + "Next").asGuiItem(event -> gui.next()));
         for (MarketListing listing : MafanaMarket.getInstance().getListingData().getAllListings()) {
-            if (!new NBTItem(listing.getItem()).getString("ItemType").contains(itemType.getLore())) {
-                continue;
-            }
             if (itemType == ItemType.ARMOR) {
-                if (!new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.LEGGGINGS.getLore()) || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.CHESTPLATE.getLore())
-                        || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.BOOTS.getLore()) || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.HELMET.getLore())) {
+                if (new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.LEGGGINGS.getLore()) || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.CHESTPLATE.getLore())
+                || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.HELMET.getLore()) || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.BOOTS.getLore())) {
+                    ItemStack item = listing.getItem();
+                    ItemMeta itemMeta = item.getItemMeta();
+                    List<String> itemLore = new ArrayList<>();
+                    for (String string : itemMeta.getLore()) {
+                        itemLore.add(string);
+                    }
+                    itemLore.add(ChatColor.DARK_GRAY + "");
+                    itemLore.add("------------------------");
+                    itemLore.add(ChatColor.DARK_GRAY + "Price: $" + listing.getPrice());
+                    if (listing.getPlayer().isOnline()) {
+                        itemLore.add(ChatColor.DARK_GRAY + "Seller: " + listing.getPlayer().getDisplayName() + " " + ChatColor.GREEN + "[ONLINE]");
+                    } else {
+                        itemLore.add(ChatColor.DARK_GRAY + "Seller: " + listing.getPlayer().getDisplayName() + " " + ChatColor.RED + "[OFFLINE]");
+                    }
+                    itemLore.add(ChatColor.DARK_GRAY + "Listing UUID: " + listing.getUuid().toString());
+                    itemLore.add(ChatColor.DARK_GRAY + "");
+                    itemLore.add(ChatColor.DARK_GRAY + "Click to buy!");
+                    itemLore.add("------------------------");
+                    itemMeta.setLore(itemLore);
+                    item.setItemMeta(itemMeta);
+                    item = NBTUtils.setString(item, "ListUUID", listing.getUuid().toString());
+                    gui.addItem(new GuiItem(item));
                     continue;
                 }
-                ItemStack item = listing.getItem();
-                ItemMeta itemMeta = item.getItemMeta();
-                List<String> itemLore = new ArrayList<>();
-                for (String string : itemMeta.getLore()) {
-                    itemLore.add(string);
-                }
-                itemLore.add(ChatColor.DARK_GRAY + "");
-                itemLore.add("------------------------");
-                itemLore.add(ChatColor.DARK_GRAY + "Price: $" + listing.getPrice());
-                if (listing.getPlayer().isOnline()) {
-                    itemLore.add(ChatColor.DARK_GRAY + "Seller: " + listing.getPlayer().getDisplayName() + " " + ChatColor.GREEN + "[ONLINE]");
-                } else {
-                    itemLore.add(ChatColor.DARK_GRAY + "Seller: " + listing.getPlayer().getDisplayName() + " " + ChatColor.RED + "[OFFLINE]");
-                }
-                itemLore.add(ChatColor.DARK_GRAY + "Listing UUID: " + listing.getUuid().toString());
-                itemLore.add(ChatColor.DARK_GRAY + "");
-                itemLore.add(ChatColor.DARK_GRAY + "Click to buy!");
-                itemLore.add("------------------------");
-                itemMeta.setLore(itemLore);
-                item.setItemMeta(itemMeta);
-                item = NBTUtils.setString(item, "ListUUID", listing.getUuid().toString());
-                gui.addItem(new GuiItem(item));
+            }
+            if (!new NBTItem(listing.getItem()).getString("ItemType").contains(itemType.getLore())) {
+                continue;
             }
             ItemStack item = listing.getItem();
             ItemMeta itemMeta = item.getItemMeta();
@@ -158,7 +158,7 @@ public class MarketShop_GUI implements Listener {
         PaginatedGui gui = Gui.paginated()
                 .title(Component.text(ChatColor.GOLD + "MafanaMarket " + ChatColor.DARK_GREEN + itemType.getLore() + ChatColor.GOLD + " Listings " + ChatColor.GRAY + "Filter: " + s))
                 .rows(6)
-                .pageSize(54)
+                .pageSize(28)
                 .disableAllInteractions()
                 .create();
         List<String> lore = new ArrayList<>();
@@ -203,17 +203,11 @@ public class MarketShop_GUI implements Listener {
         gui.setItem(6, 3, ItemBuilder.from(Material.PAPER).setName(ChatColor.DARK_GRAY + "Previous").asGuiItem(event -> gui.previous()));
         gui.setItem(6, 7, ItemBuilder.from(Material.PAPER).setName(ChatColor.DARK_GRAY + "Next").asGuiItem(event -> gui.next()));
         for (MarketListing listing : MafanaMarket.getInstance().getListingData().getAllListings()) {
-            if (!new NBTItem(listing.getItem()).getString("ItemType").contains(itemType.getLore())) {
-                continue;
-            }
             if (!listing.getItem().getItemMeta().getDisplayName().toLowerCase().contains(s.toLowerCase())) {
                 continue;
             }
-            if (itemType == ItemType.ARMOR) {
-                if (!new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.LEGGGINGS.getLore()) || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.CHESTPLATE.getLore())
-                        || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.BOOTS.getLore()) || !new NBTItem(listing.getItem()).getString("ItemType").contains(ItemType.HELMET.getLore())) {
-                    continue;
-                }
+            if (new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.LEGGGINGS.getLore()) || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.CHESTPLATE.getLore())
+                    || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.HELMET.getLore()) || new NBTItem(listing.getItem()).getString("ItemType").equalsIgnoreCase(ItemType.BOOTS.getLore())) {
                 ItemStack item = listing.getItem();
                 ItemMeta itemMeta = item.getItemMeta();
                 List<String> itemLore = new ArrayList<>();
@@ -236,6 +230,10 @@ public class MarketShop_GUI implements Listener {
                 item.setItemMeta(itemMeta);
                 item = NBTUtils.setString(item, "ListUUID", listing.getUuid().toString());
                 gui.addItem(new GuiItem(item));
+                continue;
+            }
+            if (!new NBTItem(listing.getItem()).getString("ItemType").contains(itemType.getLore())) {
+                continue;
             }
             ItemStack item = listing.getItem();
             ItemMeta itemMeta = item.getItemMeta();
@@ -277,7 +275,7 @@ public class MarketShop_GUI implements Listener {
         PaginatedGui gui = Gui.paginated()
                 .title(Component.text(ChatColor.GOLD + "MafanaMarket All Listings"))
                 .rows(6)
-                .pageSize(54)
+                .pageSize(28)
                 .disableAllInteractions()
                 .create();
         List<String> lore = new ArrayList<>();
@@ -363,7 +361,7 @@ public class MarketShop_GUI implements Listener {
         PaginatedGui gui = Gui.paginated()
                 .title(Component.text(ChatColor.GOLD + "MafanaMarket All Listings " + ChatColor.GRAY + "Filter: " + s))
                 .rows(6)
-                .pageSize(54)
+                .pageSize(28)
                 .disableAllInteractions()
                 .create();
         List<String> lore = new ArrayList<>();
@@ -446,30 +444,31 @@ public class MarketShop_GUI implements Listener {
 
         return gui;
     }
+
     public void openSearchSign(Player player, ItemType itemType) {
-            if (itemType != null) {
-                SignGUI.builder()
-                        .setLines(null, "---------------", itemType.getLore(), "MafanaMarket") // set lines
-                        .setType(Material.DARK_OAK_SIGN) // set the sign type
-                        .setHandler((p, result) -> { // set the handler/listener (called when the player finishes editing)
-                            String x = result.getLineWithoutColor(0);
-                            if (x.isEmpty()) {
-                                return List.of(SignGUIAction.run(() -> getMarketShopGui(itemType).open(player)));
-                            }
-                            return List.of(SignGUIAction.run(() -> getMarketShopGui(itemType, x).open(player)));
-                        }).callHandlerSynchronously(MafanaMarket.getInstance()).build().open(player);
-            } else {
-                SignGUI.builder()
-                        .setLines(null, "---------------", "Everything", "MafanaMarket") // set lines
-                        .setType(Material.DARK_OAK_SIGN) // set the sign type
-                        .setHandler((p, result) -> { // set the handler/listener (called when the player finishes editing)
-                            String x = result.getLineWithoutColor(0);
-                            if (x.isEmpty()) {
-                                return List.of(SignGUIAction.run(() -> getMarketShopGui().open(player)));
-                            }
-                            return List.of(SignGUIAction.run(() -> getMarketShopGui(x).open(player)));
-                        }).callHandlerSynchronously(MafanaMarket.getInstance()).build().open(player);
-            }
+        if (itemType != null) {
+            SignGUI.builder()
+                    .setLines(null, "---------------", itemType.getLore(), "MafanaMarket") // set lines
+                    .setType(Material.DARK_OAK_SIGN) // set the sign type
+                    .setHandler((p, result) -> { // set the handler/listener (called when the player finishes editing)
+                        String x = result.getLineWithoutColor(0);
+                        if (x.isEmpty()) {
+                            return List.of(SignGUIAction.run(() -> getMarketShopGui(itemType).open(player)));
+                        }
+                        return List.of(SignGUIAction.run(() -> getMarketShopGui(itemType, x).open(player)));
+                    }).callHandlerSynchronously(MafanaMarket.getInstance()).build().open(player);
+        } else {
+            SignGUI.builder()
+                    .setLines(null, "---------------", "Everything", "MafanaMarket") // set lines
+                    .setType(Material.DARK_OAK_SIGN) // set the sign type
+                    .setHandler((p, result) -> { // set the handler/listener (called when the player finishes editing)
+                        String x = result.getLineWithoutColor(0);
+                        if (x.isEmpty()) {
+                            return List.of(SignGUIAction.run(() -> getMarketShopGui().open(player)));
+                        }
+                        return List.of(SignGUIAction.run(() -> getMarketShopGui(x).open(player)));
+                    }).callHandlerSynchronously(MafanaMarket.getInstance()).build().open(player);
+        }
     }
 
 

@@ -46,30 +46,43 @@ public class MarketShopMenu implements InventoryHolder {
         return item;
     }
 
+    public ItemStack getSearchPlayer() {
+        ItemStack item = new ItemStack(Material.NAME_TAG);
+        ItemMeta meta = item.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        meta.setDisplayName(ChatColor.RED + "Player Shops");
+        lore.add("--------------------------");
+        lore.add(ChatColor.GOLD + "Click to look up players shops");
+        lore.add("--------------------------");
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+
     public ItemStack getClickItem(ItemType type) {
         ItemStack item = null;
-        if(type == ItemType.ITEM) {
+        if (type == ItemType.ITEM) {
             item = new ItemStack(Material.ROTTEN_FLESH);
         }
-        if(type == ItemType.BOW) {
+        if (type == ItemType.BOW) {
             item = new ItemStack(Material.BOW);
         }
-        if(type == ItemType.SWORD) {
+        if (type == ItemType.SWORD) {
             item = new ItemStack(Material.IRON_SWORD);
         }
-        if(type == ItemType.MATERIAL) {
+        if (type == ItemType.MATERIAL) {
             item = new ItemStack(Material.SLIME_BALL);
         }
-        if(type == ItemType.SPELL) {
+        if (type == ItemType.SPELL) {
             item = new ItemStack(Material.BOOK);
         }
-        if(type == ItemType.STAFF) {
+        if (type == ItemType.STAFF) {
             item = new ItemStack(Material.FEATHER);
         }
-        if(type == ItemType.ARMOR) {
+        if (type == ItemType.ARMOR) {
             item = new ItemStack(Material.NETHERITE_INGOT);
         }
-        if(type == null) {
+        if (type == null) {
             item = new ItemStack(Material.GOLD_NUGGET);
             ItemMeta meta = item.getItemMeta();
             List<String> lore = new ArrayList<>();
@@ -88,7 +101,7 @@ public class MarketShopMenu implements InventoryHolder {
         List<String> lore = new ArrayList<>();
         meta.setDisplayName(ChatColor.GREEN + type.getLore());
         lore.add("--------------------------");
-        lore.add(ChatColor.GOLD + "Click to see all " + type.getLore() +  " listings");
+        lore.add(ChatColor.GOLD + "Click to see all " + type.getLore() + " listings");
         lore.add("--------------------------");
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
@@ -99,7 +112,7 @@ public class MarketShopMenu implements InventoryHolder {
     }
 
     public ItemStack getShopInfo(Player player) {
-        if(MafanaMarket.getInstance().getListingData().getAllPlayerListings(player) != null) {
+        if (MafanaMarket.getInstance().getListingData().getAllPlayerListings(player) != null) {
             ItemStack item = new ItemStack(Material.GOLD_BLOCK);
             ItemMeta meta = item.getItemMeta();
             List<String> lore = new ArrayList<>();
@@ -142,11 +155,9 @@ public class MarketShopMenu implements InventoryHolder {
         gui.setItem(21, getClickItem(ItemType.ITEM));
         gui.setItem(28, getClickItem(null));
         gui.setItem(25, getShopInfo(player));
-        gui.setItem(26, getListItem());
+        gui.setItem(34, getListItem());
+        gui.setItem(16, getSearchPlayer());
         gui.setItem(49, getCloseShop());
-
-
-
 
         for (int emptySlot = 0; emptySlot < gui.getSize(); emptySlot++) {
             if (gui.getItem(emptySlot) == null || gui.getItem(emptySlot).getType().equals(Material.AIR)) {
